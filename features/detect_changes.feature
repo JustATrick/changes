@@ -8,7 +8,7 @@ Feature: detect changes
   Scenario: no change detected for a single file older than the since file
     Given an empty file named "target"
       And an empty file named "since"
-      And "since" is modified before "target"
+      And "target" is modified before "since"
     When I run `changes target --since since`
     Then the exit status should not be 0
 
