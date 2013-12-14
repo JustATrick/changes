@@ -20,3 +20,11 @@ end
 Given(/^"(.*?)" is modified after "(.*?)"$/) do |second, first|
   enforce_mtime_order(first, second)
 end
+
+Given(/^a directory named "(.*?)" with no file modified after "(.*?)"$/) do |directory, last|
+  files = ['top-level', 'sub-dir/nested']
+  files.map { |file| "#{directory}/#{file}" }.each do |f|
+    write_file(f, '')
+    enforce_mtime_order(f, last)
+  end
+end

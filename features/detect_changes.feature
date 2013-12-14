@@ -18,3 +18,10 @@ Feature: detect changes
       And "target" is modified after "since"
      When I run `changes target --since since`
      Then the exit status should be 0
+
+  Scenario: no change detected for a directory where all nested files older
+            than the since file
+    Given an empty file named "since"
+      And a directory named "target" with no file modified after "since"
+     When I run `changes target --since since`
+     Then the exit status should not be 0
