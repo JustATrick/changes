@@ -6,9 +6,7 @@ Feature: detect changes
     Then the exit status should be 0
 
   Scenario: no change detected for a single file older than the since file
-    Given an empty file named "target"
-      And an empty file named "since"
-      And "target" is modified before "since"
+    Given file "target" is modified before file "since"
     When I run `changes target --since since`
     Then the exit status should not be 0
 

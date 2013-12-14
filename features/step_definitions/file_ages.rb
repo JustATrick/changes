@@ -13,6 +13,12 @@ def enforce_mtime_order(first, second)
   end
 end
 
+Given(/^file "(.*?)" is modified before file "(.*?)"$/) do |first, second|
+  write_file(first, '')
+  write_file(second, '')
+  enforce_mtime_order(first, second)
+end
+
 Given(/^"(.*?)" is modified before "(.*?)"$/) do |first, second|
   enforce_mtime_order(first, second)
 end
