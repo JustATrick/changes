@@ -32,6 +32,10 @@ Given(/^file "(.*?)" is modified before file "(.*?)"$/) do |first, second|
   enforce_mtime_order(first, second)
 end
 
+Given(/^the following files were modified before file "(.*?)":$/) do |second, table|
+  enforce_mtime_order(table.raw.flatten, second)
+end
+
 Given(/^file "(.*?)" is modified after file "(.*?)"$/) do |second, first|
   enforce_mtime_order(first, second)
 end

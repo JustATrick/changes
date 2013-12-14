@@ -25,3 +25,10 @@ Feature: detect changes
       And file "target/deeply/nested" is modified after file "since"
      When I run `changes target --since since`
      Then the exit status should be 0
+
+  Scenario: multiple files without changes
+    Given the following files were modified before file "since":
+       | target1 |
+       | target2 |
+     When I run `changes target1 target2 --since since`
+     Then the exit status should not be 0
