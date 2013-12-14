@@ -8,28 +8,24 @@ def update_mtime(filename, new_mtime)
 end
 
 def enforce_mtime_order(first, second)
+  write_file(first, '')
+  write_file(second, '')
   in_current_dir do
     update_mtime(second, later_than(File.mtime(first)))
   end
 end
 
 Given(/^file "(.*?)" is modified before file "(.*?)"$/) do |first, second|
-  write_file(first, '')
-  write_file(second, '')
   enforce_mtime_order(first, second)
 end
 
 Given(/^file "(.*?)" is modified after file "(.*?)"$/) do |second, first|
-  write_file(first, '')
-  write_file(second, '')
   enforce_mtime_order(first, second)
 end
 
 Given(/^a directory named "(.*?)" with no file modified after file "(.*?)"$/) do |directory, last|
-  write_file(last, '')
   files = ['top-level', 'sub-dir/nested']
   files.map { |file| "#{directory}/#{file}" }.each do |f|
-    write_file(f, '')
     enforce_mtime_order(f, last)
   end
 end
