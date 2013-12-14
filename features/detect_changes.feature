@@ -11,9 +11,7 @@ Feature: detect changes
     Then the exit status should not be 0
 
   Scenario: change detected for a single file newer than the since file
-    Given an empty file named "target"
-      And an empty file named "since"
-      And "target" is modified after "since"
+    Given file "target" is modified after file "since"
      When I run `changes target --since since`
      Then the exit status should be 0
 

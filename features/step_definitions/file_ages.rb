@@ -23,6 +23,12 @@ Given(/^"(.*?)" is modified before "(.*?)"$/) do |first, second|
   enforce_mtime_order(first, second)
 end
 
+Given(/^file "(.*?)" is modified after file "(.*?)"$/) do |second, first|
+  write_file(first, '')
+  write_file(second, '')
+  enforce_mtime_order(first, second)
+end
+
 Given(/^"(.*?)" is modified after "(.*?)"$/) do |second, first|
   enforce_mtime_order(first, second)
 end
