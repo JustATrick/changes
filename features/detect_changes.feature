@@ -43,3 +43,11 @@ Feature: detect changes
       | Targets         |
       | target1 target2 |
       | target2 target1 |
+
+  Scenario: change in non-target file in cwd (a bug caused the
+            target to be ignored and everything in the cwd
+            to be used instead)
+    Given file "target1" is modified before file "since"
+      And file "target2" is modified after file "since"
+     When I run `changes target1 --since since`
+     Then the exit status should not be 0

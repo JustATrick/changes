@@ -1,6 +1,6 @@
 #!/bin/sh
 
-TEMP=`getopt --long since: -- "$@"`
+TEMP=`getopt -o '' --long since: -- "$@"`
 eval set -- "$TEMP"
 while true
 do
