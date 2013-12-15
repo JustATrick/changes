@@ -32,3 +32,14 @@ Feature: detect changes
        | target2 |
      When I run `changes target1 target2 --since since`
      Then the exit status should not be 0
+
+  Scenario Outline: multiple files with changes
+    Given file "target1" is modified before file "since"
+      And file "target2" is modified after file "since"
+     When I run `changes <Targets> --since since`
+     Then the exit status should be 0
+
+    Examples:
+      | Targets         |
+      | target1 target2 |
+      | target2 target1 |

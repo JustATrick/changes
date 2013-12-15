@@ -16,7 +16,7 @@ done
 
 if [ -e $since ]
   then
-    changed=`find $1 -newer $since`
+    changed=`find "$@" -newer $since`
     [ "$changed" != "" ]
   else
     true
