@@ -51,3 +51,14 @@ Feature: detect changes
       And file "target2" is modified after file "since"
      When I run `changes target1 --since since`
      Then the exit status should not be 0
+
+  Scenario Outline: multiple directories without changes
+    Given a directory named "target1" with no file modified after file "since"
+      And a directory named "target2" with no file modified after file "since"
+     When I run `changes <Targets> --since since`
+     Then the exit status should not be 0
+
+    Examples:
+      | Targets         |
+      | target1 target2 |
+      | target2 target1 |
