@@ -52,13 +52,17 @@ Feature: detect changes
      When I run `changes target1 --since since`
      Then the exit status should not be 0
 
-  Scenario Outline: multiple directories without changes
-    Given a directory named "target1" with no file modified after file "since"
-      And a directory named "target2" with no file modified after file "since"
+  Scenario Outline: multiple directories
+    Given a directory named "unchanged-1" with no file modified after file "since"
+      And a directory named "unchanged-2" with no file modified after file "since"
+      And a directory named "changed-1" with no file modified after file "since"
+      And file "changed-1/deeply/nested/changed" is modified after file "since"
      When I run `changes <Targets> --since since`
-     Then the exit status should not be 0
+     Then the exit status <Exit Status>
 
     Examples:
-      | Targets         |
-      | target1 target2 |
-      | target2 target1 |
+      | Targets                 | Exit Status     |
+      | unchanged-1 unchanged-2 | should not be 0 |
+      | unchanged-2 unchanged-1 | should not be 0 |
+      | changed-1 unchanged-1   | should be 0     |
+      | unchanged-1 changed-1   | should be 0     |
