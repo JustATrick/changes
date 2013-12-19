@@ -11,7 +11,8 @@ end
 
 def ensure_files_exist(files)
   files.each do |file|
-    write_file(file, '') unless File.file?(file)
+    FileUtils.mkdir_p(File.dirname(file))
+    File.open(file, 'w') { } unless File.file?(file)
   end
 end
 
@@ -22,8 +23,8 @@ end
 def enforce_mtime_order(first, second)
   first_files = [*first]
   second_files = [*second]
-  ensure_files_exist(first_files + second_files)
   in_current_dir do
+    ensure_files_exist(first_files + second_files)
     update_mtime(second_files, later_than(latest_mtime_of(first_files)))
   end
 end
