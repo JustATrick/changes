@@ -68,7 +68,10 @@ Given(/^the following files were modified before file "(.*?)":$/) do |second, ta
 end
 
 Given(/^file "(.*?)" is modified after file "(.*?)"$/) do |second, first|
-  enforce_mtime_order(first, second)
+  in_current_dir do
+    ensure_files_exist(first)
+    create_with_mtime(second, later_than(mtime_of(first)))
+  end
 end
 
 Given(/^a directory named "(.*?)" with no file modified after file "(.*?)"$/) do |directory, last|
