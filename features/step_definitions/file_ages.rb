@@ -42,7 +42,7 @@ def mtime_of(file)
   File.mtime(file)
 end
 
-def create_files_with_mtime(files, mtime)
+def create_with_mtime(files, mtime)
   [*files].each do |file|
     if File.file?(file)
       raise "File '#{file}' was already created. Changing its mtime now " +
@@ -56,14 +56,14 @@ end
 Given(/^file "(.*?)" is modified before file "(.*?)"$/) do |first, second|
   in_current_dir do
     ensure_files_exist(second)
-    create_files_with_mtime(first, earlier_than(mtime_of(second)))
+    create_with_mtime(first, earlier_than(mtime_of(second)))
   end
 end
 
 Given(/^the following files were modified before file "(.*?)":$/) do |second, table|
   in_current_dir do
     ensure_files_exist(second)
-    create_files_with_mtime(table.raw.flatten, earlier_than(mtime_of(second)))
+    create_with_mtime(table.raw.flatten, earlier_than(mtime_of(second)))
   end
 end
 
