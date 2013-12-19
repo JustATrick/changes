@@ -1,6 +1,16 @@
+DELTA = 10
+
 def later_than(time)
-  a_bit = 10
-  time + a_bit
+  time + DELTA
+end
+
+def earlier_than(mtime)
+  mtime - DELTA
+end
+
+def create_file(file)
+    FileUtils.mkdir_p(File.dirname(file))
+    File.open(file, 'w') { }
 end
 
 def update_mtime(filenames, new_mtime)
@@ -10,9 +20,8 @@ def update_mtime(filenames, new_mtime)
 end
 
 def ensure_files_exist(files)
-  files.each do |file|
-    FileUtils.mkdir_p(File.dirname(file))
-    File.open(file, 'w') { } unless File.file?(file)
+  [*files].each do |file|
+    create_file(file) unless File.file?(file)
   end
 end
 
@@ -29,8 +38,26 @@ def enforce_mtime_order(first, second)
   end
 end
 
+def mtime_of(file)
+  File.mtime(file)
+end
+
+def create_files_with_mtime(files, mtime)
+  [*files].each do |file|
+    if File.file?(file)
+      raise "File '#{file}' was already created. Changing its mtime now " +
+            "might ruin timing relationships set up earlier."
+    end
+    create_file(file)
+    update_mtime(file, mtime)
+  end
+end
+
 Given(/^file "(.*?)" is modified before file "(.*?)"$/) do |first, second|
-  enforce_mtime_order(first, second)
+  in_current_dir do
+    ensure_files_exist(second)
+    create_files_with_mtime(first, earlier_than(mtime_of(second)))
+  end
 end
 
 Given(/^the following files were modified before file "(.*?)":$/) do |second, table|
