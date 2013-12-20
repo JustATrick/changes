@@ -2,12 +2,15 @@ require 'mtime_utils'
 
 TMP_DIR = 'tmp/spec'
 
-describe "create_with_mtime" do
-  before(:each) do
+RSpec.configure do |config|
+  config.before(:each) do
     FileUtils.rm_rf(TMP_DIR)
     FileUtils.mkdir_p(TMP_DIR)
     FileUtils.cd(TMP_DIR)
   end
+end
+
+describe "create_with_mtime" do
 
   context "creating a directory" do
     it "sets the directory's mtime" do
