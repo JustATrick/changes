@@ -1,0 +1,1 @@
+default: --exclude features/support/spec
