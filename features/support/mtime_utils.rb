@@ -8,9 +8,30 @@ def earlier_than(mtime)
   mtime - DELTA
 end
 
+def parent_directories_it(parents, dir)
+  if (dir == '.')
+    parents.reverse
+  else
+    parent_directories_it(parents << dir, File.dirname(dir))
+  end
+end
+
+def parent_directories(file)
+  parent_directories_it([], File.dirname(file))
+end
+
+def dirs_to_create_for(file)
+  parents = parent_directories(file)
+  parents.select do |dir|
+    not File.directory?(dir)
+  end
+end
+
 def create_file(file)
-    FileUtils.mkdir_p(File.dirname(file))
-    File.open(file, 'w') { }
+  to_create = dirs_to_create_for(file)
+  FileUtils.mkdir(to_create)
+  File.open(file, 'w') { }
+  to_create
 end
 
 def update_mtime(filenames, new_mtime)
@@ -48,7 +69,7 @@ def create_with_mtime(files, mtime)
       raise "File '#{file}' was already created. Changing its mtime now " +
             "might ruin timing relationships set up earlier."
     end
-    create_file(file)
-    update_mtime(file, mtime)
+    created_directories = create_file(file)
+    update_mtime(created_directories << file, mtime)
   end
 end

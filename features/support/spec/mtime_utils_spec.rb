@@ -10,6 +10,37 @@ RSpec.configure do |config|
   end
 end
 
+describe "create_file" do
+  context "when no parent directories exist" do
+    context "when creating a nested file" do
+      before(:each) do
+        @nested_file = 'a/b/c'
+        @created_dirs = create_file(@nested_file)
+      end
+
+      it "creates the file and the parent directories" do
+        expect(File.file?(@nested_file)).to be(true)
+      end
+
+      it "returns the list of created dirs" do
+        expect(@created_dirs).to eq([File.join('a'), File.join('a', 'b')])
+      end
+    end
+  end
+
+  context "when one of the parent directories exists" do
+    before(:each) do
+      FileUtils.mkdir('a')
+      @nested_file = 'a/b/c'
+      @created_dirs = create_file(@nested_file)
+    end
+
+    it "returns only the dirs that were created" do
+      expect(@created_dirs).to eq([File.join('a', 'b')])
+    end
+  end
+end
+
 describe "create_with_mtime" do
 
   context "creating a directory" do
