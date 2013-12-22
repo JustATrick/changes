@@ -10,33 +10,42 @@ RSpec.configure do |config|
   end
 end
 
+describe "parent_directories" do
+  it "returns a list of all directories in the hierarchy of a relative path" +
+     "in order of outermost down to innermost" do
+    expect(parent_directories('a/b/c/d/e'))
+        .to eq(['a', 'a/b', 'a/b/c', 'a/b/c/d'])
+  end
+end
+
+describe "non_existent" do
+  it "returns a list of only directories that don't exist, preserving order" do
+    FileUtils.mkdir_p(['a', 'b', 'c/d'])
+    to_test = ['e', 'a', 'f', 'b', 'c/d/g', 'c', 'c/d']
+    expect(non_existent(to_test)).to eq(['e', 'f', 'c/d/g'])
+  end
+end
+
 describe "create_file" do
-  context "when no parent directories exist" do
-    context "when creating a nested file" do
-      before(:each) do
-        @nested_file = 'a/b/c'
-        @created_dirs = create_file(@nested_file)
-      end
+  before(:each) do
+    @target_dir = 'a/b'
+    @nested_file = File.join(@target_dir, 'c')
+  end
 
-      it "creates the file and the parent directories" do
-        expect(File.file?(@nested_file)).to be(true)
-      end
+  context "when the target directory exists" do
+    before(:each) do
+      FileUtils.mkdir_p(@target_dir)
+    end
 
-      it "returns the list of created dirs" do
-        expect(@created_dirs).to eq([File.join('a'), File.join('a', 'b')])
-      end
+    it "creates a file" do
+      create_file(@nested_file)
+      expect(File.file?(@nested_file)).to be(true)
     end
   end
 
-  context "when one of the parent directories exists" do
-    before(:each) do
-      FileUtils.mkdir('a')
-      @nested_file = 'a/b/c'
-      @created_dirs = create_file(@nested_file)
-    end
-
-    it "returns only the dirs that were created" do
-      expect(@created_dirs).to eq([File.join('a', 'b')])
+  context "when the target directory does not exist" do
+    it "raises an error" do
+      expect { create_file(@nested_file) }.to raise_error
     end
   end
 end

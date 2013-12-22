@@ -26,16 +26,8 @@ def non_existent(directories)
   end
 end
 
-def dirs_to_create_for(file)
-  parents = parent_directories(file)
-  non_existent(parents)
-end
-
 def create_file(file)
-  to_create = dirs_to_create_for(file)
-  FileUtils.mkdir(to_create)
   File.open(file, 'w') { }
-  to_create
 end
 
 def update_mtime(filenames, new_mtime)
