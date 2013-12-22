@@ -20,11 +20,15 @@ def parent_directories(file)
   parent_directories_it([], File.dirname(file))
 end
 
-def dirs_to_create_for(file)
-  parents = parent_directories(file)
-  parents.select do |dir|
+def non_existent(directories)
+  directories.select do |dir|
     not File.directory?(dir)
   end
+end
+
+def dirs_to_create_for(file)
+  parents = parent_directories(file)
+  non_existent(parents)
 end
 
 def create_file(file)
@@ -69,7 +73,9 @@ def create_with_mtime(files, mtime)
       raise "File '#{file}' was already created. Changing its mtime now " +
             "might ruin timing relationships set up earlier."
     end
-    created_directories = create_file(file)
-    update_mtime(created_directories << file, mtime)
+    parents = parent_directories(file)
+    FileUtils.mkdir(non_existent(parents))
+    create_file(file)
+    update_mtime(parents << file, mtime)
   end
 end
