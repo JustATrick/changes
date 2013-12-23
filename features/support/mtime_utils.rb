@@ -72,10 +72,18 @@ def create_with_mtime(files, mtime)
             "might ruin timing relationships set up earlier."
     end
     parents = parent_directories(file)
+    dirs_with_mtimes = parents.map do |d|
+      {
+        :dir => d,
+        :mtime => File.exists?(d) ? [mtime_of(d), mtime].max : mtime
+      }
+    end
     parents_to_create = non_existent(parents)
     FileUtils.mkdir(parents_to_create)
     create_file(file)
-    parents_to_update = parents_to_create + mtime_earlier_than(parents, mtime)
-    update_mtime(parents_to_update << file, mtime)
+    update_mtime(file, mtime)
+    dirs_with_mtimes.each do |entry|
+      update_mtime(entry[:dir], entry[:mtime])
+    end
   end
 end
