@@ -36,27 +36,8 @@ def ensure_files_exist(files)
   end
 end
 
-def latest_mtime_of(files)
-  files.map { |f| File.mtime(f) }.max
-end
-
-def enforce_mtime_order(first, second)
-  first_files = [*first]
-  second_files = [*second]
-  in_current_dir do
-    ensure_files_exist(first_files + second_files)
-    update_mtime(second_files, later_than(latest_mtime_of(first_files)))
-  end
-end
-
 def mtime_of(file)
   File.mtime(file)
-end
-
-def mtime_earlier_than(file_or_dir_names, mtime)
-  file_or_dir_names.select do |node|
-    mtime_of(node) < mtime
-  end
 end
 
 class MtimeAfterUpdate
