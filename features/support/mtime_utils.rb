@@ -59,8 +59,8 @@ def mtime_of(file)
   File.mtime(file)
 end
 
-def mtime_earlier_than(dirs, mtime)
-  dirs.select do |node|
+def mtime_earlier_than(file_or_dir_names, mtime)
+  file_or_dir_names.select do |node|
     mtime_of(node) < mtime
   end
 end
@@ -72,9 +72,10 @@ def create_with_mtime(files, mtime)
             "might ruin timing relationships set up earlier."
     end
     parents = parent_directories(file)
-    created = non_existent(parents)
-    FileUtils.mkdir(created)
+    parents_to_create = non_existent(parents)
+    FileUtils.mkdir(parents_to_create)
     create_file(file)
-    update_mtime((created + mtime_earlier_than(parents, mtime)) << file, mtime)
+    parents_to_update = parents_to_create + mtime_earlier_than(parents, mtime)
+    update_mtime(parents_to_update << file, mtime)
   end
 end
