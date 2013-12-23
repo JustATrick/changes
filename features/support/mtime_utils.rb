@@ -21,6 +21,7 @@ def dependents_of(file)
 end
 
 def create_file(file)
+  FileUtils.mkdir_p(File.dirname(file))
   File.open(file, 'w') { }
 end
 
@@ -70,7 +71,6 @@ def create_with_mtime(files, mtime)
             "might ruin timing relationships set up earlier."
     end
     mtimes = MtimesAfterUpdate.new(dependents_of(file), mtime)
-    FileUtils.mkdir_p(File.dirname(file))
     create_file(file)
     mtimes.apply_to_filesystem()
   end

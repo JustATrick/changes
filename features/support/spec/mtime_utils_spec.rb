@@ -37,8 +37,9 @@ describe "create_file" do
   end
 
   context "when the target directory does not exist" do
-    it "raises an error" do
-      expect { create_file(@nested_file) }.to raise_error
+    it "still creates a file" do
+      create_file(@nested_file)
+      expect(File.file?(@nested_file)).to be(true)
     end
   end
 end
