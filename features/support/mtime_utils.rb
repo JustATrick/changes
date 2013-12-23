@@ -65,25 +65,42 @@ def mtime_earlier_than(file_or_dir_names, mtime)
   end
 end
 
+class MtimeAfterUpdate
+  def initialize(entry, mtime)
+    @entry = entry
+    @mtime = File.exists?(entry) ? [mtime_of(entry), mtime].max : mtime
+  end
+
+  def apply_to_filesystem()
+    update_mtime(@entry, @mtime)
+  end
+end
+
+class MtimesAfterUpdate
+  def initialize(entries, new_mtime)
+    @entries = entries.map { |e| MtimeAfterUpdate.new(e, new_mtime) }
+  end
+
+  def apply_to_filesystem()
+    @entries.each do |e|
+      e.apply_to_filesystem()
+    end
+  end
+end
+
+def dependents_of(file)
+  parent_directories(file) << file
+end
+
 def create_with_mtime(files, mtime)
   [*files].each do |file|
     if File.file?(file)
       raise "File '#{file}' was already created. Changing its mtime now " +
             "might ruin timing relationships set up earlier."
     end
-    parents = parent_directories(file)
-    dirs_with_mtimes = parents.map do |d|
-      {
-        :dir => d,
-        :mtime => File.exists?(d) ? [mtime_of(d), mtime].max : mtime
-      }
-    end
-    parents_to_create = non_existent(parents)
-    FileUtils.mkdir(parents_to_create)
+    mtimes = MtimesAfterUpdate.new(dependents_of(file), mtime)
+    FileUtils.mkdir_p(File.dirname(file))
     create_file(file)
-    update_mtime(file, mtime)
-    dirs_with_mtimes.each do |entry|
-      update_mtime(entry[:dir], entry[:mtime])
-    end
+    mtimes.apply_to_filesystem()
   end
 end
