@@ -18,14 +18,6 @@ describe "parent_directories" do
   end
 end
 
-describe "non_existent" do
-  it "returns a list of only directories that don't exist, preserving order" do
-    FileUtils.mkdir_p(['a', 'b', 'c/d'])
-    to_test = ['e', 'a', 'f', 'b', 'c/d/g', 'c', 'c/d']
-    expect(non_existent(to_test)).to eq(['e', 'f', 'c/d/g'])
-  end
-end
-
 describe "create_file" do
   before(:each) do
     @target_dir = 'a/b'

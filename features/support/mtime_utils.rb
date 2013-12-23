@@ -20,12 +20,6 @@ def parent_directories(file)
   parent_directories_it([], File.dirname(file))
 end
 
-def non_existent(directories)
-  directories.select do |dir|
-    not File.directory?(dir)
-  end
-end
-
 def create_file(file)
   File.open(file, 'w') { }
 end
