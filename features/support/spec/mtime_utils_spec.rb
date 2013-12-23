@@ -50,6 +50,30 @@ describe "create_file" do
   end
 end
 
+describe "mtime_earlier_than" do
+  before(:each) do
+    earlier_files = ['a', 'b', 'c']
+    later_files = ['d', 'e', 'f']
+    earlier_dirs = ['g', 'h', 'i']
+    later_dirs = ['j', 'k', 'l']
+    (earlier_files + later_files).each do |file|
+      File.open(file, 'w') { }
+    end
+    FileUtils.mkdir(earlier_dirs + later_dirs)
+    @all = earlier_files + later_files + earlier_dirs + later_dirs
+    @earlier = earlier_files + earlier_dirs
+    later = later_files + later_dirs
+    @specified_time = Time.new(2014)
+    update_mtime(@earlier, earlier_than(@specified_time))
+    update_mtime(later, later_than(@specified_time))
+  end
+
+  it "returns only those files and directories with mtime earlier than " +
+     "the one specified" do
+    expect(mtime_earlier_than(@all, @specified_time)).to eq(@earlier)
+  end
+end
+
 describe "create_with_mtime" do
 
   context "creating a directory" do
@@ -70,6 +94,11 @@ describe "create_with_mtime" do
     end
 
     it "doesn't change the directory's mtime when the new file's " +
-       "mtime is earlier than the directory's"
+       "mtime is earlier than the directory's" do
+      FileUtils.mkdir('a')
+      original_time = File.mtime('a')
+      create_with_mtime('a/c', earlier_than(original_time))
+      expect(File.mtime('a')).to eq(original_time)
+    end
   end
 end
