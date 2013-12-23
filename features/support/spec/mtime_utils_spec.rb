@@ -96,7 +96,8 @@ describe "create_with_mtime" do
     it "doesn't change the directory's mtime when the new file's " +
        "mtime is earlier than the directory's" do
       FileUtils.mkdir('a')
-      original_time = File.mtime('a')
+      original_time = Time.now - 10 # sometime in the past
+      update_mtime('a', original_time)
       create_with_mtime('a/c', earlier_than(original_time))
       expect(File.mtime('a')).to eq(original_time)
     end
