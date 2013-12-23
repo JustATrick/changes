@@ -8,16 +8,16 @@ def earlier_than(mtime)
   mtime - DELTA
 end
 
-def parent_directories_it(parents, dir)
-  if (dir == '.')
-    parents.reverse
+def iterate_dependents_of(dependents, entry)
+  if (entry == '.')
+    dependents.reverse
   else
-    parent_directories_it(parents << dir, File.dirname(dir))
+    iterate_dependents_of(dependents << entry, File.dirname(entry))
   end
 end
 
-def parent_directories(file)
-  parent_directories_it([], File.dirname(file))
+def dependents_of(file)
+  iterate_dependents_of([], file)
 end
 
 def create_file(file)
@@ -61,10 +61,6 @@ class MtimesAfterUpdate
       e.apply_to_filesystem()
     end
   end
-end
-
-def dependents_of(file)
-  parent_directories(file) << file
 end
 
 def create_with_mtime(files, mtime)

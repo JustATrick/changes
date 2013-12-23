@@ -10,11 +10,12 @@ RSpec.configure do |config|
   end
 end
 
-describe "parent_directories" do
-  it "returns a list of all directories in the hierarchy of a relative path" +
-     "in order of outermost down to innermost" do
-    expect(parent_directories('a/b/c/d/e'))
-        .to eq(['a', 'a/b', 'a/b/c', 'a/b/c/d'])
+describe "dependents_of" do
+  it "returns a list of all filesystem entries that might be affected by a " +
+     "change of mtime on a relative path, in order of outermost down to " +
+     "innermost" do
+    expect(dependents_of('a/b/c/d/e'))
+        .to eq(['a', 'a/b', 'a/b/c', 'a/b/c/d', 'a/b/c/d/e'])
   end
 end
 
