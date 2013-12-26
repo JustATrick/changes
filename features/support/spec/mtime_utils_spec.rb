@@ -1,6 +1,6 @@
 require 'mtime_utils'
 
-TMP_DIR = 'tmp/spec'
+TMP_DIR = File.absolute_path('tmp/spec')
 
 RSpec.configure do |config|
   config.before(:each) do
