@@ -44,32 +44,66 @@ describe "create_file" do
   end
 end
 
-describe "create_with_mtime" do
+shared_examples "it creates a file" do
+  it "creates the file" do
+    expect(File.file?(filename)).to be(true)
+  end
 
-  context "creating a directory" do
+  it "sets the file's mtime" do
+    expect(File.mtime(filename)).to eq(time)
+  end
+end
+
+shared_context "creates a file" do
+  let(:dirname) { 'a' }
+  let(:filename) { File.join(dirname, 'c') }
+  before(:each) do
+    create_with_mtime(filename, time)
+  end
+end
+
+describe "create_with_mtime" do
+  context "when directory doesn't exist" do
+    include_context "creates a file" do
+      let(:time) { Time.new(2013) }
+    end
+
+    it_behaves_like "it creates a file"
+
     it "sets the directory's mtime" do
-      time = Time.new(2013)
-      create_with_mtime('a/c', time)
-      expect(File.mtime('a')).to eq(time)
+      expect(File.mtime(dirname)).to eq(time)
     end
   end
 
-  context "adding a file to an existing directory" do
-    it "sets the directory's mtime when the new file's mtime is older " +
-       "than the directory's" do
-      FileUtils.mkdir('a')
-      new_time = later_than(File.mtime('a'))
-      create_with_mtime('a/c', new_time)
-      expect(File.mtime('a')).to eq(new_time)
+  context "when directory does exist" do
+    let(:directory_time) { Time.now - 100 } # sometime in the past
+    before(:each) do
+      FileUtils.mkdir(dirname)
+      update_mtime(dirname, directory_time)
     end
 
-    it "doesn't change the directory's mtime when the new file's " +
-       "mtime is earlier than the directory's" do
-      FileUtils.mkdir('a')
-      original_time = Time.now - 10 # sometime in the past
-      update_mtime('a', original_time)
-      create_with_mtime('a/c', earlier_than(original_time))
-      expect(File.mtime('a')).to eq(original_time)
+    context "and the new file's mtime is later than the directory's" do
+      include_context "creates a file" do
+        let(:time) { later_than(directory_time) }
+      end
+
+      it_behaves_like "it creates a file"
+
+      it "sets the directory's mtime" do
+        expect(File.mtime(dirname)).to eq(time)
+      end
+    end
+
+    context "and the new file's mtime is earlier than the directory's" do
+      include_context "creates a file" do
+        let(:time) { earlier_than(directory_time) }
+      end
+
+      it_behaves_like "it creates a file"
+
+      it "leaves the directory's mtime unchanged" do
+        expect(File.mtime(dirname)).to eq(directory_time)
+      end
     end
   end
 end
