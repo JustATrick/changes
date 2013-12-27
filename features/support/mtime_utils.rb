@@ -75,3 +75,8 @@ def create_with_mtime(files, mtime)
     mtimes.apply_to_filesystem()
   end
 end
+
+def paths_for_directory(directory_name)
+  files = ['top-level', File.join('sub-dir', 'nested')]
+  paths = files.map { |file| File.join(directory_name, file) }
+end

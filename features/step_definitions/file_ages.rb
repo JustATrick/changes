@@ -20,17 +20,25 @@ Given(/^file "(.*?)" is modified after file "(.*?)"$/) do |second, first|
 end
 
 Given(/^a directory named "(.*?)" with no file modified after file "(.*?)"$/) do |directory, last|
-  files = ['top-level', File.join('sub-dir', 'nested')]
-  paths = files.map { |file| File.join(directory, file) }
   in_current_dir do
     ensure_files_exist(last)
-    create_with_mtime(paths, earlier_than(mtime_of(last)))
+    create_with_mtime(
+      paths_for_directory(directory),
+      earlier_than(mtime_of(last))
+    )
   end
 end
 
 Given(/^a directory named "(.*?)" with one file modified after file "(.*?)"$/) do |directory, anchor|
-  steps %Q{
-    Given a directory named "#{directory}" with no file modified after file "#{anchor}"
-      And file "#{File.join(directory, 'deeply', 'nested')}" is modified after file "#{anchor}"
-  }
+  in_current_dir do
+    ensure_files_exist(anchor)
+    create_with_mtime(
+      paths_for_directory(directory),
+      earlier_than(mtime_of(anchor))
+    )
+    create_with_mtime(
+      File.join(directory, 'deeply', 'nested'),
+      later_than(mtime_of(anchor))
+    )
+  end
 end
