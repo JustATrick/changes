@@ -5,13 +5,6 @@ Given(/^file "(.*?)" is modified before file "(.*?)"$/) do |first, second|
   end
 end
 
-Given(/^the following files were modified before file "(.*?)":$/) do |second, table|
-  in_current_dir do
-    ensure_files_exist(second)
-    create_with_mtime(table.raw.flatten, earlier_than(mtime_of(second)))
-  end
-end
-
 Given(/^file "(.*?)" is modified after file "(.*?)"$/) do |second, first|
   in_current_dir do
     ensure_files_exist(first)

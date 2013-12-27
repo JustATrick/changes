@@ -5,62 +5,41 @@ Feature: detect changes
     When I run `changes target --since non-existent`
     Then the exit status should be 0
 
-  Scenario: single file without changes
-    Given file "target" is modified before file "since"
-    When I run `changes target --since since`
-    Then the exit status should not be 0
-
-  Scenario: single file with changes
-    Given file "target" is modified after file "since"
-     When I run `changes target --since since`
-     Then the exit status should be 0
-
-  Scenario: single directory without changes
-    Given a directory named "target" with no file modified after file "since"
-     When I run `changes target --since since`
-     Then the exit status should not be 0
-
-  Scenario: single directory with changes
-    Given a directory named "target" with one file modified after file "since"
-     When I run `changes target --since since`
-     Then the exit status should be 0
-
-  Scenario: multiple files without changes
-    Given the following files were modified before file "since":
-       | target1 |
-       | target2 |
-     When I run `changes target1 target2 --since since`
-     Then the exit status should not be 0
-
-  Scenario Outline: multiple files with changes
-    Given file "target1" is modified before file "since"
-      And file "target2" is modified after file "since"
-     When I run `changes <Targets> --since since`
-     Then the exit status should be 0
+  Scenario Outline: single file
+    Given file "unchanged" is modified before file "since"
+      And file "changed" is modified after file "since"
+     When I run `changes <Target> --since since`
+     Then the exit status <Exit Status>
 
     Examples:
-      | Targets         |
-      | target1 target2 |
-      | target2 target1 |
+      | Target    | Exit Status     |
+      | unchanged | should not be 0 |
+      | changed   | should be 0     |
 
-  Scenario: change in non-target file in cwd (a bug caused the
-            target to be ignored and everything in the cwd
-            to be used instead)
-    Given file "target1" is modified before file "since"
-      And file "target2" is modified after file "since"
-     When I run `changes target1 --since since`
-     Then the exit status should not be 0
+  Scenario Outline: single directory
+    Given a directory named "unchanged" with no file modified after file "since"
+      And a directory named "changed" with one file modified after file "since"
+     When I run `changes <Target> --since since`
+     Then the exit status <Exit Status>
 
-  Scenario Outline: multiple directories
-    Given a directory named "unchanged-1" with no file modified after file "since"
-      And a directory named "unchanged-2" with no file modified after file "since"
-      And a directory named "changed-1" with one file modified after file "since"
+    Examples:
+      | Target    | Exit Status     |
+      | unchanged | should not be 0 |
+      | changed   | should be 0     |
+
+  Scenario Outline: multiple targets
+    Given file "unchanged-file" is modified before file "since"
+      And file "changed-file" is modified after file "since"
+      And a directory named "unchanged-dir" with no file modified after file "since"
+      And a directory named "changed-dir" with one file modified after file "since"
      When I run `changes <Targets> --since since`
      Then the exit status <Exit Status>
 
     Examples:
-      | Targets                 | Exit Status     |
-      | unchanged-1 unchanged-2 | should not be 0 |
-      | unchanged-2 unchanged-1 | should not be 0 |
-      | changed-1 unchanged-1   | should be 0     |
-      | unchanged-1 changed-1   | should be 0     |
+      | Targets                      | Exit Status     |
+      | unchanged-file unchanged-dir | should not be 0 |
+      | unchanged-dir unchanged-file | should not be 0 |
+      | changed-file unchanged-dir   | should be 0     |
+      | unchanged-dir changed-file   | should be 0     |
+      | changed-dir unchanged-file   | should be 0     |
+      | unchanged-file changed-dir   | should be 0     |
