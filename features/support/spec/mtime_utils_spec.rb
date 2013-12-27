@@ -106,4 +106,15 @@ describe "create_with_mtime" do
       end
     end
   end
+
+  context "when target file already exists" do
+    include_context "creates a file" do
+      let(:time) { Time.new(2014) }
+    end
+
+    it "raises an error" do
+      expect { create_with_mtime(filename, nil) }.
+        to raise_error(/already created/)
+    end
+  end
 end
