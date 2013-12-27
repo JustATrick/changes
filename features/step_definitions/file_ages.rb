@@ -27,3 +27,10 @@ Given(/^a directory named "(.*?)" with no file modified after file "(.*?)"$/) do
     create_with_mtime(paths, earlier_than(mtime_of(last)))
   end
 end
+
+Given(/^a directory named "(.*?)" with one file modified after file "(.*?)"$/) do |directory, anchor|
+  steps %Q{
+    Given a directory named "#{directory}" with no file modified after file "#{anchor}"
+      And file "#{File.join(directory, 'deeply', 'nested')}" is modified after file "#{anchor}"
+  }
+end

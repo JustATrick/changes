@@ -21,8 +21,7 @@ Feature: detect changes
      Then the exit status should not be 0
 
   Scenario: single directory with changes
-    Given a directory named "target" with no file modified after file "since"
-      And file "target/deeply/nested" is modified after file "since"
+    Given a directory named "target" with one file modified after file "since"
      When I run `changes target --since since`
      Then the exit status should be 0
 
@@ -55,8 +54,7 @@ Feature: detect changes
   Scenario Outline: multiple directories
     Given a directory named "unchanged-1" with no file modified after file "since"
       And a directory named "unchanged-2" with no file modified after file "since"
-      And a directory named "changed-1" with no file modified after file "since"
-      And file "changed-1/deeply/nested/changed" is modified after file "since"
+      And a directory named "changed-1" with one file modified after file "since"
      When I run `changes <Targets> --since since`
      Then the exit status <Exit Status>
 
