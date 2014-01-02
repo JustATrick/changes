@@ -43,3 +43,21 @@ Feature: detect changes
       | unchanged-dir changed-file   | should be 0     |
       | changed-dir unchanged-file   | should be 0     |
       | unchanged-file changed-dir   | should be 0     |
+
+  Scenario Outline: read names of targets from a file
+    Given file "unchanged-file-1" is modified before file "since"
+      And file "unchanged-file-2" is modified before file "since"
+      And file "changed-file" is modified after file "since"
+      And a file named "to-examine" with:
+          """
+          <Target 1>
+          <Target 2>
+          """
+     When I run `changes --in to-examine --since since`
+     Then the exit status <Exit Status>
+
+    Examples:
+      | Target 1         | Target 2         | Exit Status     |
+      | unchanged-file-1 | unchanged-file-2 | should not be 0 |
+      | unchanged-file-1 | changed-file     | should be 0     |
+      | changed-file     | unchanged-file-2 | should be 0     |

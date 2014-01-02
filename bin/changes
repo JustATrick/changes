@@ -1,6 +1,6 @@
 #!/bin/sh
 
-TEMP=`getopt -o '' --long since: -- "$@"`
+TEMP=`getopt -o '' --long 'since:,in:' -- "$@"`
 eval set -- "$TEMP"
 while true
 do
@@ -8,15 +8,25 @@ do
     --since)
       since=$2
       shift 2 ;;
+    --in)
+      in=$2
+      shift 2 ;;
     --)
       shift
       break ;;
   esac
 done
 
+if [ "$in" != "" ]
+  then
+    targets=`cat "$in" | xargs echo`
+  else
+    targets="$@"
+fi
+
 if [ -e $since ]
   then
-    changed=`find "$@" -newer $since`
+    changed=`find $targets -newer $since`
     [ "$changed" != "" ]
   else
     true
