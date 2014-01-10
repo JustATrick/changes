@@ -61,3 +61,18 @@ Feature: detect changes
       | unchanged-file-1 | unchanged-file-2 | should not be 0 |
       | unchanged-file-1 | changed-file     | should be 0     |
       | changed-file     | unchanged-file-2 | should be 0     |
+
+  Scenario Outline: read target names that include spaces from a file
+    Given file "unchanged file" is modified before file "since"
+      And file "changed file" is modified after file "since"
+      And a file named "to-examine" with:
+          """
+          <Target>
+          """
+     When I run `changes --in to-examine --since since`
+     Then the exit status <Exit Status>
+
+    Examples:
+      | Target         | Exit Status     |
+      | unchanged file | should not be 0 |
+      | changed file   | should be 0     |

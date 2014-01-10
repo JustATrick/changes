@@ -18,15 +18,17 @@ do
 done
 
 if [ "$in" != "" ]
-  then
-    targets=`cat "$in" | xargs echo`
-  else
-    targets="$@"
+  then # set positional parameters to lines from the file named $in
+    OLD_IFS='';
+    IFS='
+'
+    set -- $(cat "$in")
+    IFS=$OLD_IFS
 fi
 
 if [ -e $since ]
   then
-    changed=`find $targets -newer $since`
+    changed=`find "$@" -newer $since`
     [ "$changed" != "" ]
   else
     true
