@@ -1,6 +1,6 @@
 #!/bin/sh
 
-TEMP=`getopt -o '' --long 'since:,in:' -- "$@"`
+TEMP=`getopt -o '' --long 'since:,in:,but-not:' -- "$@"`
 eval set -- "$TEMP"
 while true
 do
@@ -10,6 +10,9 @@ do
       shift 2 ;;
     --in)
       in=$2
+      shift 2 ;;
+    --but-not)
+      prune="-path $2 -prune -o"
       shift 2 ;;
     --)
       shift
@@ -28,7 +31,7 @@ fi
 
 if [ -e $since ]
   then
-    changed=`find "$@" -newer $since`
+    changed=`find "$@" $prune -newer $since -print`
     [ "$changed" != "" ]
   else
     true

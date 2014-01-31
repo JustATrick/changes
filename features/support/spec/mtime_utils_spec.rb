@@ -76,34 +76,21 @@ describe "create_with_mtime" do
   end
 
   context "when directory does exist" do
-    let(:directory_time) { Time.now - 100 } # sometime in the past
+    # sometime in the past, so that if anything modified the dir's mtime to
+    # some value of 'now', then we'd be able to detect it.
+    let(:directory_time) { Time.now - 100 }
     before(:each) do
       FileUtils.mkdir(dirname)
       update_mtime(dirname, directory_time)
     end
-
-    context "and the new file's mtime is later than the directory's" do
-      include_context "creates a file" do
-        let(:time) { later_than(directory_time) }
-      end
-
-      it_behaves_like "it creates a file"
-
-      it "sets the directory's mtime" do
-        expect(File.mtime(dirname)).to eq(time)
-      end
+    include_context "creates a file" do
+      let(:time) { later_than(directory_time) }
     end
 
-    context "and the new file's mtime is earlier than the directory's" do
-      include_context "creates a file" do
-        let(:time) { earlier_than(directory_time) }
-      end
+    it_behaves_like "it creates a file"
 
-      it_behaves_like "it creates a file"
-
-      it "leaves the directory's mtime unchanged" do
-        expect(File.mtime(dirname)).to eq(directory_time)
-      end
+    it "leaves the directory's mtime unchanged" do
+      expect(File.mtime(dirname)).to eq(directory_time)
     end
   end
 

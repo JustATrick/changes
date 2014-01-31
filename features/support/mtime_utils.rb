@@ -44,7 +44,7 @@ end
 class MtimeAfterUpdate
   def initialize(entry, mtime)
     @entry = entry
-    @mtime = File.exists?(entry) ? [mtime_of(entry), mtime].max : mtime
+    @mtime = File.exists?(entry) ? mtime_of(entry) : mtime
   end
 
   def apply_to_filesystem()
