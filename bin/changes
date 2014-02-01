@@ -12,7 +12,7 @@ do
       in=$2
       shift 2 ;;
     --but-not)
-      prune="-path $2 -prune -o"
+      not=$2
       shift 2 ;;
     --)
       shift
@@ -29,9 +29,14 @@ if [ "$in" != "" ]
     IFS=$OLD_IFS
 fi
 
+if [ "$not" != "" ]
+  then
+    set -- "$@" -path "$not" -prune -o
+fi
+
 if [ -e $since ]
   then
-    changed=`find "$@" $prune -newer $since -print`
+    changed=`find "$@" -newer $since -print`
     [ "$changed" != "" ]
   else
     true
